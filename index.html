@@ -155,7 +155,7 @@
 
             <div class="mt-4 text-center">
                 <p class="text-[10px] text-slate-500 mb-4 italic">Tocca la carta per svelare l'inchiostro segreto</p>
-                <button onclick="prepareTransition()" class="w-full py-4 bg-[#1c0f0a] hover:bg-[#2c1a12] text-[#d4af37] rounded font-bold text-xs uppercase tracking-widest border border-[#4a2f22] transition-colors font-display">
+                <button id="btn-memorized" onclick="prepareTransition()" disabled class="w-full py-4 bg-[#1c0f0a] hover:bg-[#2c1a12] text-[#d4af37] rounded font-bold text-xs uppercase tracking-widest border border-[#4a2f22] transition-all font-display disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-[#1c0f0a]">
                     Ho Memorizzato, Copri Carta
                 </button>
             </div>
@@ -363,6 +363,7 @@
         let gameData = { word: {} };
         let activePlayerCount = 6; 
         let currentDifficulty = 'medium'; // Default iniziale di sistema
+        let hasViewedRole = false; // Flag: il giocatore corrente ha gi� svelato la carta?
 
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
@@ -473,6 +474,10 @@
             document.getElementById('transition-screen').classList.add('hidden');
             document.getElementById('role-screen').classList.remove('hidden');
             
+            // Reset dello stato per il nuovo giocatore: deve svelare la carta prima di proseguire
+            hasViewedRole = false;
+            document.getElementById('btn-memorized').disabled = true;
+            
             const player = players[currentPlayerIndex];
             document.getElementById('player-name-turn').innerText = player.name;
             const content = document.getElementById('secret-word-content');
@@ -495,6 +500,13 @@
             const wordBox = document.getElementById('word-box');
             wordBox.classList.toggle('revealed');
             wordBox.classList.toggle('hidden-content');
+            
+            // Al primo svelamento sblocchiamo il bottone "Ho Memorizzato"
+            // Una volta sbloccato, resta sbloccato anche se il giocatore ri-blura la carta
+            if (!hasViewedRole) {
+                hasViewedRole = true;
+                document.getElementById('btn-memorized').disabled = false;
+            }
         }
 
         function showPlayScreen() {
